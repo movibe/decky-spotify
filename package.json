@@ -7,7 +7,12 @@
     "build": "rollup -c",
     "watch": "rollup -c -w",
     "test": "bun test",
-    "start": "bun run watch"
+    "start": "bun run watch",
+    "release:build": "bash scripts/build-release.sh",
+    "version:patch": "npm version patch --no-git-tag-version",
+    "version:minor": "npm version minor --no-git-tag-version",
+    "version:major": "npm version major --no-git-tag-version",
+    "release": "pnpm run build && pnpm run release:build"
   },
   "repository": {
     "type": "git",

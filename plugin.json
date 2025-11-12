@@ -5,7 +5,7 @@
   "api_version": 1,
   "publish": {
     "tags": ["spotify", "music", "player"],
-    "description": "Spotify Web Player para Decky, com login por conta do usuário.",
+    "description": "Spotify Web Player for Decky, with user account login.",
     "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
   }
 }
