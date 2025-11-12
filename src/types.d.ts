@@ -12,3 +12,10 @@ declare module "*.jpg" {
   const content: string;
   export default content;
 }
+
+declare global {
+  interface Window {
+    Spotify?: any;
+    onSpotifyWebPlaybackSDKReady?: () => void;
+  }
+}
