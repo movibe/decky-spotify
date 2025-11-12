@@ -1,7 +1,7 @@
 {
-  "name": "decky-plugin-template",
+  "name": "decky-spotify",
   "version": "0.0.1",
-  "description": "A template to quickly create decky plugins from scratch, based on TypeScript and webpack",
+  "description": "A Spotify plugin for the Steam Deck",
   "type": "module",
   "scripts": {
     "build": "rollup -c",
@@ -11,12 +11,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SteamDeckHomebrew/decky-plugin-template.git"
+    "url": "git+https://github.com/SteamDeckHomebrew/decky-spotify.git"
   },
   "keywords": [
     "decky",
     "plugin",
-    "plugin-template",
+    "spotify",
     "steam-deck",
     "deck"
   ],
