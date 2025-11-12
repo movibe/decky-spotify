@@ -50,18 +50,29 @@ pnpm run build
 
 ### Creating a Release
 
-#### Automated (Recommended)
+#### Automatic Release on Main Merge (Recommended)
+
+When you merge code to the `main` branch, GitHub Actions will automatically:
+1. Check if the version in `package.json` has changed
+2. If a new version is detected and no tag exists for it:
+   - Build the plugin
+   - Create a zip archive
+   - Create a git tag automatically
+   - Create a GitHub release with the zip attached
+
+**To trigger a release:**
+1. Update version in `package.json`: `pnpm run version:patch` (or `minor`/`major`)
+2. Commit and push to main: `git commit -am "chore: bump version" && git push origin main`
+3. Merge to main (via PR or direct push)
+4. The release will be created automatically!
+
+#### Manual Release with Script
 
 1. Update version: `pnpm run version:patch` (or `minor`/`major`)
 2. Create release: `bash scripts/create-release.sh patch`
 3. Push tag: `git push origin v<version>`
 
-The GitHub Actions workflow will automatically:
-- Build the plugin
-- Create a zip archive
-- Create a GitHub release with the zip attached
-
-#### Manual
+#### Manual Release
 
 1. Update version in `package.json`
 2. Build: `pnpm run build`

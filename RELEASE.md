@@ -2,7 +2,38 @@
 
 This guide explains how to create releases for the Decky Spotify plugin.
 
-## Automated Process (Recommended)
+## Automatic Release on Main Merge (Recommended)
+
+When you merge code to the `main` branch, GitHub Actions will automatically detect if the version in `package.json` has changed and create a release if needed.
+
+### How it works:
+
+1. **Update version in package.json:**
+   ```bash
+   pnpm run version:patch  # or version:minor, version:major
+   ```
+
+2. **Commit and push to main:**
+   ```bash
+   git add package.json
+   git commit -m "chore: bump version to X.Y.Z"
+   git push origin main
+   ```
+
+3. **Merge to main** (via Pull Request or direct push)
+
+4. **GitHub Actions automatically:**
+   - Detects the version change
+   - Checks if a tag already exists for that version
+   - If no tag exists, it will:
+     - Build the plugin
+     - Create a zip archive
+     - Create a git tag automatically
+     - Create a GitHub release with the zip attached
+
+**Note:** The workflow will skip creating a release if a tag for the current version already exists, preventing duplicate releases.
+
+## Manual Release Process
 
 ### 1. Create a new release
 
