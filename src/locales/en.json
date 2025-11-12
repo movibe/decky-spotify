@@ -1,0 +1,35 @@
+{
+    "common": {
+        "clientId": "Client ID",
+        "redirectUri": "Redirect URI",
+        "connect": "Connect to Spotify",
+        "logout": "Logout",
+        "search": "Search",
+        "searchPlaceholder": "Search music",
+        "play": "Play",
+        "processing": "Processing...",
+        "error": "Error"
+    },
+    "spotify": {
+        "title": "Spotify Player",
+        "connected": "Spotify connected",
+        "loginComplete": "Login completed",
+        "clientIdRequired": "Client ID required",
+        "clientIdRequiredBody": "Enter your Spotify Client ID",
+        "loggedInAs": "Logged in as",
+        "gettingProfile": "Getting profile...",
+        "initWebPlayer": "Initialize Web Player",
+        "playerReady": "Player ready",
+        "device": "Device"
+    },
+    "auth": {
+        "title": "Spotify Login",
+        "processingLogin": "Processing login..."
+    },
+    "language": {
+        "title": "Language",
+        "english": "English",
+        "portuguese": "Portuguese",
+        "french": "French"
+    }
+}
