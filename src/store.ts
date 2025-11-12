@@ -14,6 +14,7 @@ export interface SpotifyState {
   deviceId?: string;
   query: string;
   results: any[];
+  language: 'en' | 'pt' | 'fr';
   setClientId: (id: string) => void;
   setAuth: (auth: AuthState) => void;
   clearAuth: () => void;
@@ -21,6 +22,7 @@ export interface SpotifyState {
   setDeviceId: (id: string | undefined) => void;
   setQuery: (q: string) => void;
   setResults: (items: any[]) => void;
+  setLanguage: (lang: 'en' | 'pt' | 'fr') => void;
 }
 
 /**
@@ -36,6 +38,7 @@ export const useSpotifyStore = create<SpotifyState>()(
       deviceId: undefined,
       query: "",
       results: [],
+      language: (localStorage.getItem('spotify_language') as 'en' | 'pt' | 'fr') || 'pt',
       setClientId: (id) => set({ clientId: id }),
       setAuth: (auth) => set({ auth }),
       clearAuth: () => set({ auth: {}, me: undefined }),
@@ -43,10 +46,14 @@ export const useSpotifyStore = create<SpotifyState>()(
       setDeviceId: (id) => set({ deviceId: id }),
       setQuery: (q) => set({ query: q }),
       setResults: (items) => set({ results: items }),
+      setLanguage: (lang) => {
+        set({ language: lang });
+        localStorage.setItem('spotify_language', lang);
+      },
     }),
     {
       name: "spotify_store",
-      partialize: (state) => ({ clientId: state.clientId, auth: state.auth, query: state.query }),
+      partialize: (state) => ({ clientId: state.clientId, auth: state.auth, query: state.query, language: state.language }),
     }
   )
 );

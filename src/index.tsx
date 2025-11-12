@@ -3,7 +3,8 @@ import {
   PanelSection,
   PanelSectionRow,
   Navigation,
-  staticClasses
+  staticClasses,
+  DropdownItem
 } from "@decky/ui";
 import {
   addEventListener,
@@ -14,8 +15,10 @@ import {
 } from "@decky/api"
 import React, { useEffect, useMemo } from "react";
 import { FaSpotify } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { buildAuthorizeUrl } from "./spotify-core";
 import { useSpotifyStore } from "./store";
+import "./i18n";
 
 // import logo from "../assets/logo.png";
 
@@ -162,6 +165,7 @@ function logout(clearAuth: () => void){
  * OAuth callback view to finalize PKCE flow.
  */
 function SpotifyAuthCallback({ clientId, redirectUri }: { clientId: string; redirectUri: string }){
+  const { t } = useTranslation();
   const setAuth = useSpotifyStore((s) => s.setAuth);
   const [error, setError] = React.useState<string | undefined>();
   useEffect(() => {
@@ -177,22 +181,23 @@ function SpotifyAuthCallback({ clientId, redirectUri }: { clientId: string; redi
         setAuth({ accessToken: tokens.access_token, refreshToken: tokens.refresh_token, expiresAt: Date.now() + tokens.expires_in * 1000 });
         Navigation.Navigate("/");
         Navigation.CloseSideMenus();
-        toaster.toast({ title: "Spotify conectado", body: "Login concluído" });
+        toaster.toast({ title: t("spotify.connected"), body: t("spotify.loginComplete") });
       } catch (e: any) {
         setError(e?.message || String(e));
       }
     })();
   }, [clientId, redirectUri]);
   return (
-    <PanelSection title="Spotify Login">
+    <PanelSection title={t("auth.title")}>
       <PanelSectionRow>
-        {error ? `Erro: ${error}` : "Processando login..."}
+        {error ? `${t("common.error")}: ${error}` : t("auth.processingLogin")}
       </PanelSectionRow>
     </PanelSection>
   );
 }
 
 function Content(){
+  const { t, i18n } = useTranslation();
   const clientId = useSpotifyStore((s) => s.clientId);
   const setClientId = useSpotifyStore((s) => s.setClientId);
   const auth = useSpotifyStore((s) => s.auth);
@@ -205,11 +210,20 @@ function Content(){
   const results = useSpotifyStore((s) => s.results);
   const setResults = useSpotifyStore((s) => s.setResults);
   const clearAuth = useSpotifyStore((s) => s.clearAuth);
+  const language = useSpotifyStore((s) => s.language);
+  const setLanguage = useSpotifyStore((s) => s.setLanguage);
   const token = auth.accessToken;
   const redirectUri = useMemo(() => {
     const origin = window.location.origin;
     return `${origin}/decky-spotify-callback`;
   }, []);
+
+  // Sync language with i18next
+  useEffect(() => {
+    if (i18n.language !== language) {
+      i18n.changeLanguage(language);
+    }
+  }, [language, i18n]);
 
   useEffect(() => {
     (async () => {
@@ -225,7 +239,7 @@ function Content(){
 
   const doLogin = async () => {
     if (!clientId) {
-      toaster.toast({ title: "Client ID obrigatório", body: "Insira seu Spotify Client ID" });
+      toaster.toast({ title: t("spotify.clientIdRequired"), body: t("spotify.clientIdRequiredBody") });
       return;
     }
     const scopes = [
@@ -250,7 +264,7 @@ function Content(){
     const { deviceId: id } = await createAndConnectPlayer(token);
     setDeviceId(id);
     await transferPlayback(token, id);
-    toaster.toast({ title: "Player pronto", body: `Device ${id}` });
+    toaster.toast({ title: t("spotify.playerReady"), body: `${t("spotify.device")} ${id}` });
   };
 
   const onSearch = async () => {
@@ -270,57 +284,83 @@ function Content(){
     setDeviceId(undefined);
   };
 
+  const handleLanguageChange = (lang: 'en' | 'pt' | 'fr') => {
+    setLanguage(lang);
+    i18n.changeLanguage(lang);
+  };
+
   return (
-    <PanelSection title="Spotify Player">
-      <PanelSectionRow>
-        <input
-          placeholder="Client ID"
-          value={clientId}
-          onChange={(e) => setClientId((e.target as HTMLInputElement).value)}
-          style={{ width: "100%" }}
-        />
-      </PanelSectionRow>
-      <PanelSectionRow>
-        {`Redirect URI: ${redirectUri}`}
-      </PanelSectionRow>
-      <PanelSectionRow>
-        <ButtonItem layout="below" onClick={doLogin}>Conectar ao Spotify</ButtonItem>
-      </PanelSectionRow>
-      {token && (
-        <>
-          <PanelSectionRow>
-            {me ? `Logado como: ${me.display_name || me.id}` : "Obtendo perfil..."}
-          </PanelSectionRow>
-          <PanelSectionRow>
-            <ButtonItem layout="below" onClick={initPlayer}>Iniciar Web Player</ButtonItem>
-          </PanelSectionRow>
-          <PanelSectionRow>
-            <div style={{ display: "flex", gap: 8, width: "100%" }}>
-              <input
-                placeholder="Buscar música"
-                value={query}
-                onChange={(e) => setQuery((e.target as HTMLInputElement).value)}
-                style={{ flex: 1 }}
-              />
-              <ButtonItem layout="below" onClick={onSearch}>Buscar</ButtonItem>
-            </div>
-          </PanelSectionRow>
-          {results.map((t) => (
-            <PanelSectionRow key={t.id}>
-              <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
-                <div>
-                  {t.name} — {t.artists?.map((a: any) => a.name).join(", ")}
-                </div>
-                <ButtonItem layout="inline" onClick={() => onPlay(t.uri)}>Play</ButtonItem>
+    <>
+      <PanelSection title={t("spotify.title")}>
+        <PanelSectionRow>
+          <input
+            placeholder={t("common.clientId")}
+            value={clientId}
+            onChange={(e) => setClientId((e.target as HTMLInputElement).value)}
+            style={{ width: "100%" }}
+          />
+        </PanelSectionRow>
+        <PanelSectionRow>
+          {`${t("common.redirectUri")}: ${redirectUri}`}
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <ButtonItem layout="below" onClick={doLogin}>{t("common.connect")}</ButtonItem>
+        </PanelSectionRow>
+        {token && (
+          <>
+            <PanelSectionRow>
+              {me ? `${t("spotify.loggedInAs")}: ${me.display_name || me.id}` : t("spotify.gettingProfile")}
+            </PanelSectionRow>
+            <PanelSectionRow>
+              <ButtonItem layout="below" onClick={initPlayer}>{t("spotify.initWebPlayer")}</ButtonItem>
+            </PanelSectionRow>
+            <PanelSectionRow>
+              <div style={{ display: "flex", gap: 8, width: "100%" }}>
+                <input
+                  placeholder={t("common.searchPlaceholder")}
+                  value={query}
+                  onChange={(e) => setQuery((e.target as HTMLInputElement).value)}
+                  style={{ flex: 1 }}
+                />
+                <ButtonItem layout="below" onClick={onSearch}>{t("common.search")}</ButtonItem>
               </div>
             </PanelSectionRow>
-          ))}
-          <PanelSectionRow>
-            <ButtonItem layout="below" onClick={onLogout}>Logout</ButtonItem>
-          </PanelSectionRow>
-        </>
-      )}
-    </PanelSection>
+            {results.map((track) => (
+              <PanelSectionRow key={track.id}>
+                <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
+                  <div>
+                    {track.name} — {track.artists?.map((a: any) => a.name).join(", ")}
+                  </div>
+                  <ButtonItem layout="inline" onClick={() => onPlay(track.uri)}>{t("common.play")}</ButtonItem>
+                </div>
+              </PanelSectionRow>
+            ))}
+            <PanelSectionRow>
+              <ButtonItem layout="below" onClick={onLogout}>{t("common.logout")}</ButtonItem>
+            </PanelSectionRow>
+          </>
+        )}
+      </PanelSection>
+      <PanelSection title={t("language.title")}>
+        <PanelSectionRow>
+          <DropdownItem
+            label={t("language.title")}
+            menuLabel={t("language.title")}
+            rgOptions={[
+              { data: 'en', label: t("language.english") },
+              { data: 'pt', label: t("language.portuguese") },
+              { data: 'fr', label: t("language.french") },
+            ]}
+            selectedOption={language}
+            onChange={(option) => {
+              if (option && option.data) {
+                handleLanguageChange(option.data as 'en' | 'pt' | 'fr');
+              }
+            }}
+          />
+        </PanelSectionRow>
+      </PanelSection>
+    </>
   );
 };
 
