@@ -1,6 +1,6 @@
 {
   "name": "decky-spotify",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Spotify plugin for the Steam Deck",
   "type": "module",
   "scripts": {
