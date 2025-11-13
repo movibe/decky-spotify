@@ -45,10 +45,9 @@ pnpm run build
 - `pnpm run build` - Build the plugin
 - `pnpm run watch` - Watch mode for development
 - `pnpm run test` - Run tests
-- `pnpm run dev` - Start local test server (browser testing)
-- `pnpm run dev:watch` - Watch mode + test server (recommended for development)
+- `pnpm run dev:watch` - Watch mode for development (recommended)
 - `pnpm run release:build` - Build and create release zip
-- `pnpm run release` - Build and create release zip (alias)
+- `pnpm run release` - Run semantic-release
 
 ### Browser Testing
 
@@ -59,13 +58,8 @@ You can test the plugin interface in your browser:
    pnpm run build
    ```
 
-2. **Start the test server:**
-   ```bash
-   pnpm run dev
-   ```
-
-3. **Open your browser:**
-   Navigate to `http://localhost:3000`
+2. **Open the test page:**
+   Open `dev/index.html` directly in your browser
 
 **For development with auto-reload:**
 
