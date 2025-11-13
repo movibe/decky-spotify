@@ -10,29 +10,15 @@ This directory contains files for testing the Decky Spotify plugin in a browser 
    pnpm run build
    ```
 
-2. **Start the test server:**
-
-   ```bash
-   pnpm run dev
-   ```
-
-3. **Open your browser:**
-   Navigate to `http://localhost:3000`
+2. **Open the test page:**
+   Open `dev/index.html` directly in your browser
 
 ## Watch Mode (Recommended)
 
 For development with auto-reload:
 
-**Terminal 1:**
-
 ```bash
 pnpm run watch
-```
-
-**Terminal 2:**
-
-```bash
-pnpm run dev
 ```
 
 Then refresh your browser after each change.
@@ -40,7 +26,6 @@ Then refresh your browser after each change.
 ## What's Included
 
 - **`index.html`**: Test page with Decky API mocks
-- **`server.js`**: Simple HTTP server for local testing
 
 ## Limitations
 
@@ -68,6 +53,7 @@ Then refresh your browser after each change.
 - Make sure you ran `pnpm run build` first
 - Check browser console for errors
 - Verify `dist/index.js` exists
+- You may need to serve the files via a local server (e.g., `python -m http.server` or `npx serve`)
 
 ### Styles look wrong
 
