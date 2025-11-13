@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decky Spotify - Browser Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1b2838;
+            color: #c7d5e0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: #16202d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #66c0f4;
+            margin-bottom: 10px;
+        }
+        
+        .test-area {
+            background: #16202d;
+            padding: 20px;
+            border-radius: 8px;
+            min-height: 500px;
+        }
+        
+        .console {
+            background: #0e1621;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .console-item {
+            margin-bottom: 5px;
+            color: #8f98a0;
+        }
+        
+        .console-error {
+            color: #ff6b6b;
+        }
+        
+        .console-warn {
+            color: #ffa500;
+        }
+        
+        .console-log {
+            color: #8f98a0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 Decky Spotify Plugin - Browser Test</h1>
+            <p>This page simulates the Decky Loader environment for testing the plugin UI.</p>
+        </div>
+        
+        <div class="test-area" id="plugin-root">
+            <!-- Plugin will be rendered here -->
+        </div>
+        
+        <div class="console" id="console">
+            <div class="console-item">Console output will appear here...</div>
+        </div>
+    </div>
+
+    <!-- Mock Decky APIs -->
+    <script>
+        // Mock window.SP_REACT
+        window.SP_REACT = {
+            createElement: (type, props, ...children) => {
+                const element = document.createElement(type);
+                if (props) {
+                    Object.keys(props).forEach(key => {
+                        if (key === 'className') {
+                            element.className = props[key];
+                        } else if (key === 'style' && typeof props[key] === 'object') {
+                            Object.assign(element.style, props[key]);
+                        } else if (key.startsWith('on') && typeof props[key] === 'function') {
+                            const eventName = key.substring(2).toLowerCase();
+                            element.addEventListener(eventName, props[key]);
+                        } else if (key !== 'children') {
+                            element.setAttribute(key, props[key]);
+                        }
+                    });
+                }
+                children.forEach(child => {
+                    if (typeof child === 'string' || typeof child === 'number') {
+                        element.appendChild(document.createTextNode(child));
+                    } else if (child) {
+                        element.appendChild(child);
+                    }
+                });
+                return element;
+            },
+            Fragment: ({ children }) => {
+                const fragment = document.createDocumentFragment();
+                if (Array.isArray(children)) {
+                    children.forEach(child => {
+                        if (typeof child === 'string' || typeof child === 'number') {
+                            fragment.appendChild(document.createTextNode(child));
+                        } else if (child) {
+                            fragment.appendChild(child);
+                        }
+                    });
+                }
+                return fragment;
+            },
+            useState: (initial) => {
+                let state = initial;
+                const listeners = [];
+                return [
+                    state,
+                    (newState) => {
+                        state = typeof newState === 'function' ? newState(state) : newState;
+                        listeners.forEach(listener => listener(state));
+                    }
+                ];
+            },
+            useEffect: (effect, deps) => {
+                effect();
+            },
+            useMemo: (factory, deps) => factory(),
+        };
+
+        // Mock Decky Loader API
+        window.__DECKY_SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED_deckyLoaderAPIInit = {
+            connect: (version, pluginName) => {
+                console.log(`[Decky Mock] Connecting plugin: ${pluginName} (API v${version})`);
+                return {
+                    _version: version,
+                    addEventListener: (event, callback) => {
+                        console.log(`[Decky Mock] Event listener added: ${event}`);
+                        return () => console.log(`[Decky Mock] Event listener removed: ${event}`);
+                    },
+                    removeEventListener: (event, listener) => {
+                        console.log(`[Decky Mock] Event listener removed: ${event}`);
+                    },
+                    routerHook: {
+                        addRoute: (path, component, options) => {
+                            console.log(`[Decky Mock] Route added: ${path}`);
+                        },
+                        removeRoute: (path) => {
+                            console.log(`[Decky Mock] Route removed: ${path}`);
+                        }
+                    },
+                    toaster: {
+                        toast: (options) => {
+                            const consoleDiv = document.getElementById('console');
+                            const item = document.createElement('div');
+                            item.className = 'console-item console-log';
+                            item.textContent = `[Toast] ${options.title}: ${options.body}`;
+                            consoleDiv.appendChild(item);
+                            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                            console.log('[Decky Mock] Toast:', options);
+                        }
+                    }
+                };
+            }
+        };
+
+        // Console override for better visibility
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.log = (...args) => {
+            originalLog.apply(console, args);
+            addConsoleMessage('log', args.join(' '));
+        };
+
+        console.error = (...args) => {
+            originalError.apply(console, args);
+            addConsoleMessage('error', args.join(' '));
+        };
+
+        console.warn = (...args) => {
+            originalWarn.apply(console, args);
+            addConsoleMessage('warn', args.join(' '));
+        };
+
+        function addConsoleMessage(type, message) {
+            const consoleDiv = document.getElementById('console');
+            const item = document.createElement('div');
+            item.className = `console-item console-${type}`;
+            item.textContent = `[${type.toUpperCase()}] ${message}`;
+            consoleDiv.appendChild(item);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        // Load the plugin bundle
+        window.addEventListener('DOMContentLoaded', () => {
+            const script = document.createElement('script');
+            script.src = '../dist/index.js';
+            script.onload = () => {
+                console.log('[Test] Plugin bundle loaded');
+                
+                // Wait a bit for the plugin to initialize
+                setTimeout(() => {
+                    // Try to render the plugin if it's available
+                    if (window.deckyPlugin) {
+                        const plugin = window.deckyPlugin();
+                        const root = document.getElementById('plugin-root');
+                        
+                        if (plugin && plugin.content) {
+                            // Simple render function for React elements
+                            function renderElement(element, container) {
+                                if (typeof element === 'string' || typeof element === 'number') {
+                                    container.appendChild(document.createTextNode(element));
+                                } else if (element && element.type) {
+                                    const domElement = window.SP_REACT.createElement(
+                                        element.type,
+                                        element.props,
+                                        ...(element.props?.children || [])
+                                    );
+                                    container.appendChild(domElement);
+                                } else if (element) {
+                                    container.appendChild(element);
+                                }
+                            }
+                            
+                            if (plugin.content) {
+                                renderElement(plugin.content, root);
+                            }
+                        }
+                    } else {
+                        addConsoleMessage('warn', 'Plugin loaded but window.deckyPlugin not found. Plugin may need manual initialization.');
+                    }
+                }, 100);
+            };
+            script.onerror = (error) => {
+                console.error('[Test] Failed to load plugin bundle:', error);
+                addConsoleMessage('error', 'Failed to load plugin bundle. Make sure to run: pnpm run build');
+            };
+            document.head.appendChild(script);
+        });
+    </script>
+</body>
+</html>
+
