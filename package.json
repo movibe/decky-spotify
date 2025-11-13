@@ -11,14 +11,14 @@
     "dev": "node dev/server.js",
     "dev:watch": "pnpm run watch & pnpm run dev",
     "release:build": "bash scripts/build-release.sh",
+    "release": "semantic-release",
     "version:patch": "npm version patch --no-git-tag-version",
     "version:minor": "npm version minor --no-git-tag-version",
-    "version:major": "npm version major --no-git-tag-version",
-    "release": "pnpm run build && pnpm run release:build"
+    "version:major": "npm version major --no-git-tag-version"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SteamDeckHomebrew/decky-spotify.git"
+    "url": "https://github.com/movibe/decky-spotify.git"
   },
   "keywords": [
     "decky",
@@ -36,10 +36,14 @@
   "devDependencies": {
     "@decky/rollup": "^1.0.1",
     "@decky/ui": "^4.7.2",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.1.0",
+    "@semantic-release/github": "^9.2.6",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@types/webpack": "^5.28.5",
     "rollup": "^4.22.5",
+    "semantic-release": "^23.0.7",
     "typescript": "^5.6.2"
   },
   "dependencies": {
