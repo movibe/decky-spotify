@@ -45,8 +45,41 @@ pnpm run build
 - `pnpm run build` - Build the plugin
 - `pnpm run watch` - Watch mode for development
 - `pnpm run test` - Run tests
+- `pnpm run dev` - Start local test server (browser testing)
+- `pnpm run dev:watch` - Watch mode + test server (recommended for development)
 - `pnpm run release:build` - Build and create release zip
 - `pnpm run release` - Build and create release zip (alias)
+
+### Browser Testing
+
+You can test the plugin interface in your browser:
+
+1. **Build the plugin:**
+   ```bash
+   pnpm run build
+   ```
+
+2. **Start the test server:**
+   ```bash
+   pnpm run dev
+   ```
+
+3. **Open your browser:**
+   Navigate to `http://localhost:3000`
+
+**For development with auto-reload:**
+
+Terminal 1:
+```bash
+pnpm run watch
+```
+
+Terminal 2:
+```bash
+pnpm run dev
+```
+
+See [`dev/README.md`](dev/README.md) for more details and limitations.
 
 ### Creating a Release
 

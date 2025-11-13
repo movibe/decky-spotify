@@ -8,6 +8,8 @@
     "watch": "rollup -c -w",
     "test": "bun test",
     "start": "bun run watch",
+    "dev": "node dev/server.js",
+    "dev:watch": "pnpm run watch & pnpm run dev",
     "release:build": "bash scripts/build-release.sh",
     "version:patch": "npm version patch --no-git-tag-version",
     "version:minor": "npm version minor --no-git-tag-version",
